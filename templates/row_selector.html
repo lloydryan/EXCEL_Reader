@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card select">
+                <div class="card-body">
+                    <form id="studentForm" action="{{ url_for('retrieve_data') }}" method="post">
+                        <h2 class="card-title">Student Selection</h2>
+                        <div class="form-group">
+                            <label for="row_number">Enter row number (1 to {{ max_rows }}):</label>
+                            <input type="number" class="form-control" value="1" id="row_number" name="row_number" min="1"
+                                max="{{ max_rows }}" placeholder="Enter row number">
+                        </div>
+                        <button type="submit" class="btn btn-secondary proceed">Proceed</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Function to handle form submission and validation
+    document.getElementById('studentForm').addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the form from submitting initially
+
+        let rowNumber = document.getElementById('row_number').value;
+
+        if (!rowNumber || isNaN(rowNumber)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter a valid number!',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            // Proceed with form submission if valid
+            this.submit();
+        }
+    });
+</script>
+{% endblock %}

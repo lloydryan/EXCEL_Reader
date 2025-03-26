@@ -1,0 +1,109 @@
+        .background-image {
+            position: fixed;
+            margin-top: 30%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .background-image img {
+            width: 100%;
+            height: 75%;
+            object-fit: cover;
+        }
+        .teacher{
+            border-bottom: 1px solid black;
+            width: 500px;
+            text-align: center;
+        }
+        #overall-level-for-intervention-top{
+            border-bottom: 1px solid black;
+            text-align: center;
+            margin-left: 100px;
+        }
+        #final-score{
+            margin-left: 20px;
+            border-bottom: 1px solid black;
+        }
+        #formattedDate{
+            border-bottom: 1px solid black;
+            
+        }
+        .student_name{
+            border-bottom: 1px solid black;
+        }
+        .score-select{
+            width: 75px !important;
+        }
+        @media (max-width: 768px) {
+            .background-image {
+                margin-top: 50%;
+            }
+
+            .background-image img {
+                object-fit: contain;
+            }
+
+
+        }
+
+        @media (max-width: 576px) {
+            .background-image img {
+                object-fit: contain;
+            }
+
+            .background-image {
+                margin-top: 65%;
+            }
+
+        }
+
+        @media print{
+
+            .selector{
+                display: none !important;
+            }
+        .row {
+            display: flex;
+            flex-direction: row;
+        }
+    
+        .col-md-9 {
+        width: 75%; /* Adjust width to maintain alignment */
+        }
+
+        .col-md-3 {
+            width: 25%; /* Adjust width to maintain alignment */
+            text-align: right; /* Align the box content to the right */
+        }
+        .col-md-8 {
+        width: 65%; /* Adjust width to maintain alignment */
+        }
+
+        .col-md-4 {
+            width: 35%; /* Adjust width to maintain alignment */
+        }
+    
+    
+        .box1 {
+            text-align: right;
+            /* Keep the score aligned right if needed */
+            margin-top: 10px;
+            /* Add some space between the text and the score */
+        }
+    
+        p {
+            margin: 0;
+            /* Remove margin to avoid unnecessary space */
+        }
+    
+        .mt-3 {
+            margin-top: 20px;
+            /* Adjust as needed for spacing between rows */
+        }
+        .background-image{
+            display: none;
+        }
+        }

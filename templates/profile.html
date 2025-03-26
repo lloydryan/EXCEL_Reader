@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title mb-0 text-center ">Profile Management</h2>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="alert alert-warning" role="alert">
+                        <ul class="list-unstyled">
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <form method="POST" enctype="multipart/form-data" id="profileForm">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group text-center">
+                            <label for="profile_picture">Current Profile Picture</label>
+                            <br>
+                            {% if form.profile_picture.data %}
+                            <img src="data:image/jpeg;base64,{{ form.profile_picture.data }}"
+                                class="img-thumbnail profilePIC" alt="Profile Picture">
+                            <br><br>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control", readonly="readonly") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.first_name.label(class="form-label") }}
+                            {{ form.first_name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.last_name.label(class="form-label") }}
+                            {{ form.last_name(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.birthday.label(class="form-label") }}
+                            {{ form.birthday(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.address.label(class="form-label") }}
+                            {{ form.address(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.profile_picture.label(class="form-label") }}
+                            {{ form.profile_picture(class="form-control-file", id="profile_picture") }}
+                        </div>
+                        <button type="submit" class="btn btn-primary profile-btn">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sweet Alert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+    // Client-side validation for profile picture upload
+    document.getElementById('profileForm').addEventListener('submit', function (event) {
+        var fileInput = document.getElementById('profile_picture');
+        var file = fileInput.files[0];
+
+        if (file) {
+            var fileType = file.type;
+            if (!(fileType === 'image/jpeg' || fileType === 'image/png' || fileType === 'image/jpg')) {
+                event.preventDefault(); // Prevent form submission
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File Type!',
+                    text: 'Please upload only JPG, JPEG, or PNG files.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    });
+</script>
+
+{% endblock %}

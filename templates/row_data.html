@@ -1,0 +1,713 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container selector">
+    <div class="mt-3 ">
+        <div class="row">
+            <div class="col-md-6">
+                <button id="recommendation-btn" class="btn btn-primary" onclick="toggleButton()">LEAST LEARNED</button>
+                <button id="lft" class="btn btn-primary" onclick="openLearnerScoreSheet()">FLT LEARNER SCORE
+                    SHEET</button>
+
+            </div>
+            <div class="col-md-6 d-flex justify-content-end align-items-start">
+                <form action="{{ url_for('retrieve_data') }}" method="post" class="form-inline" id="select_student">
+                    <label for="row_number" class="mr-2">Select Another Student (1 to {{ max_rows }}):</label>
+                    <input type="number" id="row_number" value="1" name="row_number" min="1" max="{{ max_rows }}"
+                        class="form-control mr-2">
+                    <input type="submit" value="Proceed" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <h1 id="student_data" style="text-align: center; margin-top: 20px;"><strong>Student Data</strong></h1>
+    <h1 id="recommendation-header" style="display: none; text-align:center; margin-top: 20px;"> <strong>Least
+            Learned</strong> </h1>
+    <h1 id="score-sheet" style="text-align: center; display: none; margin-top: 20px;"><strong>FLT LEARNER SCORE
+            SHEET</strong></h1>
+    <div class="row mt-4">
+        <div class="col-md-9">
+            <h3 class="name"> Name: <span class="student_name">{{ name }}</span></h3>
+
+        </div>
+        <div class="col-md-3">
+            <h3 id="date" style="display: none; margin-left: -140px;"> <strong>Date: </strong> <span id="formattedDate"></span></h3>
+        </div>
+
+    </div>
+    <h3 class="mt-2 final-score-header" style="display: '';"><strong> OVERALL SCORE:</strong> <span id="final-score">{{
+            final_score
+            }}</span>
+    </h3>
+
+
+    <div id="student_result">
+        <div class="mt-4">
+            <div class="subjects">
+                <h2 class="subject" id="subject">PIS</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Answer</th>
+                            <th>Score</th> <!-- New column for score -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for column, data in additional_columns_C_to_K.items() %}
+                        <tr>
+                            <td>{{ column }}</td>
+                            <td>{{ data['value'] }}</td>
+                            <td>
+                                <form action="{{ url_for('update_score_pis') }}" method="post" class="d-inline">
+                                    <input type="hidden" name="row" value="{{ row_number }}">
+                                    <input type="hidden" name="question_id" value="PIS_Q{{ loop.index }}">
+                                    <input type="hidden" name="student_name" value="{{ name }}">
+                                    <input type="hidden" name="section" value="PIS">
+                                    <select name="score" class="form-control score-select" onchange="this.form.submit()">
+                                        {% for score_value in range(0, 2) %}
+                                        <option value="{{ score_value }}" {% if data['score']==score_value %} selected {% endif %}>
+                                            {{ score_value }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+
+                                </form>
+                            </td> <!-- Display the score -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tr>
+
+                        <td colspan="2" style="text-align: right;"><strong>Total Score for PIS:</strong></td>
+                        <td><strong id="total-score-pis">{{ total_score_PIS }}</strong></td>
+                        <!-- Display total score -->
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Display Total Scores for All Sections -->
+
+        <div class="mt-4">
+            {% set final_score = 0 %}
+            {% for section, data in combined_data.items() %}
+            <div class="subjects">
+                <h2 class="subject" id="subject">{{ section }}</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Student Answer</th>
+                            <th>Answer Key</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set section_total_score = 0 %}
+                        {% for i in range(data|length) %}
+                        <tr>
+                            <td>{{ data[i].column }}</td>
+                            <td>{{ data[i].uploaded_value }}</td>
+                            <td>{{ data[i].ls_value }}</td>
+                            <td>
+                                {% if (section == 'Ls1_English' and question_scores[section][i].question_no in [8, 9,
+                                10, 11, 12, 13]) or
+                                (section == 'Ls1_Filipino' and question_scores[section][i].question_no in [8, 9, 10,
+                                11]) %}
+                                <form action="{{ url_for('update_score') }}" method="post" class="form-inline">
+                                    <input type="hidden" name="row" value="{{ row_number }}">
+                                    <input type="hidden" name="student_name" value="{{ name }}">
+                                    <input type="hidden" name="section" value="{{ section }}">
+                                    <input type="hidden" name="question_no"
+                                        value="{{ question_scores[section][i].question_no }}">
+                                    <select name="score" class="form-control score-select"
+                                        onchange="this.form.submit()">
+                                        {% for score_value in range(0, 3) %}
+                                        <option value="{{ score_value }}" {% if
+                                            question_scores[section][i].score==score_value %} selected {% endif %}>
+                                            {{ score_value }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                                {% else %}
+                                {{ question_scores[section][i].score }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% set score = question_scores[section][i].score %}
+                        {% set section_total_score = section_total_score + score %}
+                        {% endfor %}
+
+                        <!-- Adjust total score display for Ls1_Filipino and Ls1_English -->
+                        {% if section == 'Ls1_Filipino' or section == 'Ls1_English' %}
+                        {% set section_total_score = section_total_score %}
+                        {% endif %}
+
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>Total Score for {{ section }}:</strong>
+                            </td>
+                            <td><strong><span id="section-total-{{ section }}">{{ section_total_score }}</span></strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Accumulate section_total_score to final_score -->
+            {% set final_score = final_score + section_total_score %}
+            {% endfor %}
+            <!-- Display Final Score -->
+        </div>
+    </div>
+
+
+    <h3 id="level" style="display: none" ;><strong> ALS LEVEL:</strong> <span
+            id="overall-level-for-intervention-top"></span></h3>
+    <div class=" mt-4" id="lft_result" style="display: none;">
+        <table class="table table-bordered flt">
+            <thead>
+                <tr>
+                    <th style="width: 37%;">STRAND</th>
+                    <th style="width: 26%;">SCORE</th>
+                    <th style="width: 37%;">LEVEL FOR INTERVENTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong> PIS</strong></td>
+                    <td id="total-score-pis" style="text-align: center;">
+                        <div class="box">
+                            <span>{{ total_score_PIS }}</span>
+                        </div>
+                    </td>
+                    <td style="text-align: center; text-decoration: underline;">
+                        {% if 0 <= total_score_PIS <=4 %} BASIC LEVEL (Grade 1) {% elif total_score_PIS==5 %} Lower
+                            Level (Grade 2-3) {% elif total_score_PIS==6 %} Advanced Elementary (Grade 4-6) {% elif 7
+                            <=total_score_PIS <=8 %} Junior HS (Grade 7-10) {% elif 9 <=total_score_PIS <=10 %} Senior
+                            HS (Grade 11-12) {% else %} Undefined {% endif %} </td>
+                </tr>
+            </tbody>
+
+            </tr>
+            {% for section in combined_data.keys() %}
+            <tr>
+                <td>
+
+                    {% if section == 'Ls1_English' %}
+                    <p><strong> LS 1 Communication Skills - English </strong></p>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <p>Multiple Choice </p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="box1"><span id="mcq-score-english">{{ mcqEglish }}</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-9">
+                            <p>Writing</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="box1"><span id="writing-score">{{ writing_score }}</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-9">
+                            <p>Listening /Speaking</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="box1"><span id="listening-score">{{ listening_score }}</span></div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    {% elif section == 'Ls1_Filipino' %}
+                    <p><strong>LS 1 Communication Skills - Filipino </strong></p>
+
+                    <div class="row">
+                        <div class="col-md-9">
+                            <p>Multiple Choice</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="box1"><span id="mcq-score-filipino">{{ mcqfilipino }}</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-9">
+                            <p>Pagsusulat</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="box1"><span id="pagsusulat-score">{{ pagsulat_score }}</span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-9">
+                            <p>Pakikinig/Pakikipagsalita</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="box1"><span id="pakikinig-pakikipagsalita-score">{{ pakikipagsalita_score
+                                    }}</span></div>
+                        </div>
+                    </div>
+
+
+                    {% elif section == 'Ls2' %}
+                    <p><strong>LS 2 Scientific Literacy and Critical Thinking Skills</strong></p>
+
+                    {% elif section == 'Ls3' %}
+                    <p><strong>LS 3 Mathematical and Problem Solving Skills</strong> </p>
+
+                    {% elif section == 'Ls4' %}
+                    <p><strong>LS 4 Life & Career Skills</strong> </p>
+
+                    {% elif section == 'Ls5' %}
+                    <p><strong>LS 5 Understanding the Self & Society</strong> </p>
+
+                    {% elif section == 'Ls6' %}
+                    <p><strong>LS 6 Digital Citizenship</strong> </p>
+                    {% endif %}
+                </td>
+
+                <td style="text-align: center;">
+                    <div class="box">
+                        <span id="display-section-total-{{ section }}"></span>
+                    </div>
+                </td>
+                <td id="level-for-intervention-{{ section }}" style="text-align: center; text-decoration: underline;">
+                </td>
+            </tr>
+            {% endfor %}
+
+            <tr>
+                <td><strong>OVERALL SCORE</strong> </td>
+                <td style="text-align: center;">
+                    <div class="box">
+                        <span id="display-final-score"></span>
+                    </div>
+                </td>
+                <td id="overall-level-for-intervention" style="text-align: center; text-decoration: underline;"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <h3 class="mt-5"><strong> NAME & SIGNATURE OF ALS TEACHER:</strong></h3>
+    <div class="teacher">
+        <h2 class="mt-3">{{ first_name }} {{ last_name }}</h2>
+    </div>
+    <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    // Example timestamp from the backend
+    const rawTimestamp = "{{ date }}"; // Replace this with the server-provided timestamp (e.g., "2024-09-08 15:53:54.156000")
+
+    // Function to format the timestamp
+    function formatDate(timestamp) {
+        // Parse the timestamp
+        const date = new Date(timestamp);
+
+        // Define options for formatting
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+
+        // Return the formatted date
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    // Format the date and display it
+    const formattedDate = formatDate(rawTimestamp);
+    document.getElementById("formattedDate").innerText = formattedDate;
+
+    // Optionally, make the element visible
+    document.getElementById("date").style.display = "block";
+</script>
+
+
+
+    <script>
+        window.onload = function () {
+            var totalScorePIS = parseInt(document.getElementById('total-score-pis').innerText.trim()) || 0;
+            var sections = document.querySelectorAll('.subjects');
+            var finalScore = 0;
+            var finalScoreAdjusted =0;
+            
+            // Initialize scores for Ls1_English and Ls1_Filipino
+            var mcqScoreEnglish = 0;
+            var mcqScoreFilipino = 0;
+            var writingScore = 0;
+            var listeningScore = 0;
+            var pagsusulatScore = 0;
+            var pakikinigPakikipagsalitaScore = 0;
+
+            sections.forEach(function (section) {
+                var sectionName = section.querySelector('h2').innerText.trim();
+                var rows = section.querySelectorAll('tbody tr');
+                var sectionTotalScore = 0;
+
+                rows.forEach(function (row) {
+                    var scoreCell = row.querySelector('td:last-child');
+                    var staticScore = parseInt(scoreCell.innerText.trim()) || 0;
+
+                    // Check if there's a select element with the class 'score-select'
+                    var selectElement = row.querySelector('.score-select');
+                    var dynamicScore = selectElement ? parseInt(selectElement.value) || 0 : 0;
+                    sectionTotalScore += (staticScore + dynamicScore); // Add static and dynamic scores
+
+                    // Calculate section scores based on question ranges
+                    if (sectionName === 'Ls1_English') {
+                        var questionNo = parseInt(row.querySelector('td:first-child').innerText.trim()) || 0;
+                        if (questionNo >= 1 && questionNo <= 7) {
+                            mcqScoreEnglish += staticScore + dynamicScore;
+                        } else if (questionNo >= 8 && questionNo <= 9) {
+                            writingScore += staticScore + dynamicScore;
+                        } else if (questionNo >= 10 && questionNo <= 13) {
+                            listeningScore += staticScore + dynamicScore;
+                        }
+                    } else if (sectionName === 'Ls1_Filipino') {
+                        var questionNo = parseInt(row.querySelector('td:first-child').innerText.trim()) || 0;
+                        if (questionNo >= 1 && questionNo <= 6) {
+                            mcqScoreFilipino += staticScore + dynamicScore;
+                        } else if (questionNo >= 7 && questionNo <= 9) {
+                            pagsusulatScore += staticScore + dynamicScore;
+                        } else if (questionNo >= 10 && questionNo <= 11) {
+                            pakikinigPakikipagsalitaScore += staticScore + dynamicScore;
+                        }
+                    }
+                });
+
+                // Update section total in the first table
+                var totalScoreElement = document.getElementById('section-total-' + sectionName);
+                if (totalScoreElement) {
+                    totalScoreElement.innerText = sectionTotalScore;
+                }
+
+                // Update section total in the ALS LEVEL table
+                var displayScoreElement = document.getElementById('display-section-total-' + sectionName);
+                if (displayScoreElement) {
+                    displayScoreElement.innerText = sectionTotalScore;
+                }
+
+                // Add section total to the overall score
+                finalScore += sectionTotalScore;
+
+                // Determine intervention level for the section
+                var interventionLevel = '';
+                if (sectionName === 'Ls1_English' || sectionName === 'Ls3') {
+                    if (sectionTotalScore >= 0 && sectionTotalScore <= 2) {
+                        interventionLevel = "Basic Level (Grade 1)";
+                    } else if (sectionTotalScore === 3) {
+                        interventionLevel = "Lower Elem. (Grade 2-3)";
+                    } else if (sectionTotalScore === 4) {
+                        interventionLevel = "Advanced Elem. (Grade 4-6)";
+                    } else if (sectionTotalScore >= 5 && sectionTotalScore <= 9) {
+                        interventionLevel = "Junior HS (Grade 7-10)";
+                    } else if (sectionTotalScore >= 10 && sectionTotalScore <= 15) {
+                        interventionLevel = "Senior HS (Grade 11-12)";
+                    }
+                } else if (sectionName === 'Ls1_Filipino') {
+                    if (sectionTotalScore >= 0 && sectionTotalScore <= 1) {
+                        interventionLevel = "Basic Level (Grade 1)";
+                    } else if (sectionTotalScore === 2) {
+                        interventionLevel = "Lower Elem. (Grade 2-3)";
+                    } else if (sectionTotalScore === 3) {
+                        interventionLevel = "Advanced Elem. (Grade 4-6)";
+                    } else if (sectionTotalScore >= 4 && sectionTotalScore <= 9) {
+                        interventionLevel = "Junior HS (Grade 7-10)";
+                    } else if (sectionTotalScore >= 10 && sectionTotalScore <= 15) {
+                        interventionLevel = "Senior HS (Grade 11-12)";
+                    }
+                } else if (sectionName === 'Ls2') {
+                    if (sectionTotalScore === 0) {
+                        interventionLevel = "Basic Level (Grade 1)";
+                    } else if (sectionTotalScore === 1) {
+                        interventionLevel = "Lower Elem. (Grade 2-3)";
+                    } else if (sectionTotalScore >= 1 && sectionTotalScore <= 2) {
+                        interventionLevel = "Advanced Elem. (Grade 4-6)";
+                    } else if (sectionTotalScore >= 3 && sectionTotalScore <= 8) {
+                        interventionLevel = "Junior HS (Grade 7-10)";
+                    } else if (sectionTotalScore >= 9 && sectionTotalScore <= 13) {
+                        interventionLevel = "Senior HS (Grade 11-12)";
+                    }
+                } else if (sectionName === 'Ls4' || sectionName === 'Ls5') {
+                    if (sectionTotalScore === 0) {
+                        interventionLevel = "Basic Level (Grade 1)";
+                    } else if (sectionTotalScore === 1) {
+                        interventionLevel = "Lower Elem. (Grade 2-3)";
+                    } else if (sectionTotalScore >= 1 && sectionTotalScore <= 3) {
+                        interventionLevel = "Advanced Elem. (Grade 4-6)";
+                    } else if (sectionTotalScore >= 4 && sectionTotalScore <= 7) {
+                        interventionLevel = "Junior HS (Grade 7-10)";
+                    } else if (sectionTotalScore >= 8 && sectionTotalScore <= 10) {
+                        interventionLevel = "Senior HS (Grade 11-12)";
+                    }
+                } else if (sectionName === 'Ls6') {
+                    if (sectionTotalScore === 0) {
+                        interventionLevel = "Basic Level (Grade 1)";
+                    } else if (sectionTotalScore === 1) {
+                        interventionLevel = "Lower Elem. (Grade 2-3)";
+                    } else if (sectionTotalScore === 2) {
+                        interventionLevel = "Advanced Elem. (Grade 4-6)";
+                    } else if (sectionTotalScore >= 3 && sectionTotalScore <= 6) {
+                        interventionLevel = "Junior HS (Grade 7-10)";
+                    } else if (sectionTotalScore >= 7 && sectionTotalScore <= 10) {
+                        interventionLevel = "Senior HS (Grade 11-12)";
+                    }
+                }
+
+                // Update the level of intervention in the ALS LEVEL table
+                var levelElement = document.getElementById(`level-for-intervention-${sectionName}`);
+                if (levelElement) {
+                    levelElement.textContent = interventionLevel;
+                }
+
+                // Log for debugging
+                console.log('Section: ' + sectionName + ', Intervention Level: ' + interventionLevel);
+            });
+
+            // Update the final score in the final score header and ALS LEVEL table
+            finalScoreAdjusted = finalScore - totalScorePIS - 9;
+            document.getElementById('final-score').innerText = finalScoreAdjusted;
+            document.getElementById('display-final-score').innerText = finalScoreAdjusted;
+
+
+            // Determine the overall level of intervention based on the final score
+            var overallInterventionLevel = '';
+            if (finalScoreAdjusted >= 0 && finalScoreAdjusted <= 9) {
+                overallInterventionLevel = "Basic Level (Grade 1)";
+            } else if (finalScoreAdjusted >= 10 && finalScoreAdjusted <= 13) {
+                overallInterventionLevel = "Lower Elem. (Grade 2-3)";
+            } else if (finalScoreAdjusted >= 14 && finalScoreAdjusted <= 27) {
+                overallInterventionLevel = "Advanced Elem. (Grade 4-6)";
+            } else if (finalScoreAdjusted >= 28 && finalScoreAdjusted <= 64) {
+                overallInterventionLevel = "Junior HS (Grade 7-10)";
+            } else if (finalScoreAdjusted >= 65 && finalScoreAdjusted <= 98) {
+                overallInterventionLevel = "Senior HS (Grade 11-12)";
+            }
+
+            // Update the overall level of intervention in the ALS LEVEL table
+            var overallLevelElement = document.getElementById('overall-level-for-intervention');
+            if (overallLevelElement) {
+                overallLevelElement.textContent = overallInterventionLevel;
+            }
+
+            var overallLevelElement = document.getElementById('overall-level-for-intervention-top');
+            if (overallLevelElement) {
+                overallLevelElement.textContent = overallInterventionLevel;
+            }
+            document.getElementById('mcq-score-english').innerText = mcqScoreEnglish;
+            document.getElementById('mcq-score-filipino').innerText = mcqScoreFilipino;
+            document.getElementById('writing-score').innerText = writingScore;
+            document.getElementById('listening-score').innerText = listeningScore;
+            document.getElementById('pagsusulat-score').innerText = pagsusulatScore;
+            document.getElementById('pakikinig-pakikipagsalita-score').innerText = pakikinigPakikipagsalitaScore;
+
+            // Display MCQ, Writing, Listening, Pagsusulat, and Pakikinig/Pakikipagsalita scores
+            console.log('MCQ Score (English): ' + mcqScoreEnglish);
+            console.log('MCQ Score (Filipino): ' + mcqScoreFilipino);
+            console.log('Writing Score: ' + writingScore);
+            console.log('Listening Score: ' + listeningScore);
+            console.log('Pagsusulat Score: ' + pagsusulatScore);
+            console.log('Pakikinig/Pakikipagsalita Score: ' + pakikinigPakikipagsalitaScore);
+        };
+
+    </script>
+
+    <script>
+        function openLearnerScoreSheet() {
+            var button = document.getElementById('recommendation-btn');
+            var button2 = document.getElementById('lft');
+            var selectData = document.getElementById('student_data');
+            var score_sheet_header = document.getElementById('score-sheet');
+            var lft_result_header = document.getElementById('lft_result');
+            var student_result = document.getElementById('student_result');
+            var level = document.getElementById('level');
+            var date = document.getElementById('date');
+
+
+            // Check the current text of button2
+            if (button2.innerText === 'FLT LEARNER SCORE SHEET') {
+                button2.innerText = 'Back';
+                button.style.display = 'none'; // Hide recommendation-btn
+                selectData.style.display = 'none';
+                score_sheet_header.style.display = 'block';
+                lft_result_header.style.display = 'block';
+                student_result.style.display = 'none';
+                level.style.display = 'block';
+                date.style.display = 'block';
+
+            } else {
+                button2.innerText = 'FLT LEARNER SCORE SHEET';
+                button.style.display = 'inline-block'; // Show recommendation-btn
+                selectData.style.display = 'block';
+                score_sheet_header.style.display = 'none';
+                lft_result_header.style.display = 'none';
+                student_result.style.display = 'block';
+                level.style.display = 'none';
+                date.style.display = 'none';
+            }
+        }
+    </script>
+
+
+
+    <script>
+        function toggleButton() {
+            var button = document.getElementById('recommendation-btn');
+            var button2 = document.getElementById('lft');
+            var header = document.getElementById('recommendation-header');
+            var rows = document.querySelectorAll('tbody tr');
+            var headers = document.querySelectorAll('thead th');
+            var finalScoreHeader = document.querySelector('.final-score-header');
+            var tables = document.querySelectorAll('.subjects');
+            var selectStudent = document.getElementById('select_student');
+            var selectData = document.getElementById('student_data');
+            var date = document.getElementById('date');
+
+            if (button.innerText === 'LEAST LEARNED') {
+                button.innerText = 'Back';
+                header.style.display = 'block';
+                selectStudent.style.display = 'none';
+                selectData.style.display = 'none';
+                button2.style.display = 'none';
+                date.style.display = 'block';
+
+                rows.forEach(function (row) {
+                    var cells = row.querySelectorAll('td');
+                    for (var j = 1; j < cells.length; j++) {
+                        cells[j].style.display = 'none';
+                    }
+                });
+
+                headers.forEach(function (th) {
+                    if (th.innerText !== 'Question') {
+                        th.style.display = 'none';
+                    }
+                });
+
+                rows.forEach(function (row) {
+                    if (row.innerText.includes('Total Score for')) {
+                        row.style.display = 'none';
+                    }
+                });
+
+                if (finalScoreHeader) {
+                    finalScoreHeader.style.display = 'none';
+                }
+
+                rows.forEach(function (row) {
+                    var scoreCell = row.querySelector('td:last-child');
+                    var selectElement = row.querySelector('select.score-select');
+                    var score;
+
+                    if (selectElement) {
+                        score = parseInt(selectElement.value.trim());
+                    } else {
+                        score = parseInt(scoreCell.innerText.trim());
+                    }
+
+                    if (score !== 0) {
+                        row.style.display = 'none';
+                    }
+                });
+
+                tables.forEach(function (table) {
+                    var visibleRows = table.querySelectorAll('tbody tr[style*="display: none;"]');
+                    var allRowsHidden = visibleRows.length === table.querySelectorAll('tbody tr').length;
+
+                    if (allRowsHidden) {
+                        table.style.display = 'none';
+                        var subjectHeader = table.querySelector('h2.subject');
+                        if (subjectHeader) {
+                            subjectHeader.style.display = 'none';
+                        }
+                    }
+                });
+
+            } else {
+                button.innerText = 'LEAST LEARNED';
+                header.style.display = 'none';
+                selectStudent.style.display = 'flex';
+                selectData.style.display = 'block';
+                button2.style.display = 'inline-block';
+                date.style.display = 'none';
+
+                rows.forEach(function (row) {
+                    var cells = row.querySelectorAll('td');
+                    cells.forEach(function (cell) {
+                        cell.style.display = '';
+                    });
+                    row.style.display = '';
+                });
+
+                headers.forEach(function (th) {
+                    th.style.display = '';
+                });
+
+                rows.forEach(function (row) {
+                    if (row.innerText.includes('Total Score for')) {
+                        row.style.display = '';
+                    }
+                });
+
+                if (finalScoreHeader) {
+                    finalScoreHeader.style.display = '';
+                }
+
+                tables.forEach(function (table) {
+                    table.style.display = '';
+                    var subjectHeader = table.querySelector('h2.subject');
+                    if (subjectHeader) {
+                        subjectHeader.style.display = '';
+                    }
+                });
+            }
+        }
+    </script>
+
+
+    {% endblock %}

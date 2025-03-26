@@ -1,0 +1,334 @@
+:root {
+    --color1: #059212;
+    --color2: #06D001;
+    --color3: #9BEC00;
+    --color4: #F3FF90;
+    --black: #333;
+    --white: #fff;
+}
+@font-face {
+    font-family: 'game';
+    src: url('/static/fonts/Jaro-Regular-VariableFont_opsz.ttf') format('truetype');
+    /* Corrected the file path and format */
+    /* Add additional file formats if available */
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1,h2,h3, th, thead,tr,p {
+    font-family: Arial, Helvetica, sans-serif;
+}
+    /* Additional styles for adjusting table layout */
+    table.table-bordered {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table.table-bordered th,
+    table.table-bordered td {
+        border: 1px solid #a1a1a1;
+        padding: 8px;
+    }
+        table.table-bordered td {
+        background-color: #f8f9fa;
+    }
+    table.table-bordered th{
+        background-color: #dcdddd;
+        text-align: center;
+    }
+
+    .box{
+        border: solid black 1px;
+        width: 50px;
+        height: 40px;
+        margin-left: 40%;
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center; 
+    }
+    .box span {
+    text-align: center;      /* Center text horizontally within the span */
+    }
+    .box1{
+        border: solid black 1px;
+        width: 50px;
+        height: 40px;
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center; 
+    }
+    .box1 span {
+    text-align: center;      /* Center text horizontally within the span */
+    }
+
+
+/* Default to 200px width for mobile view */
+.action {
+    width: 200px;
+}
+
+/* Media query for larger screens (computer view) */
+@media (min-width: 768px) {
+    .action {
+        width: 350px;
+    }
+}
+
+
+
+
+
+
+.key{
+    height: 850px;
+}
+.select{
+    height: 300px;
+    padding-top: 30px;
+}
+.proceed{
+    width: 100%;
+}
+
+
+
+
+
+
+.name{
+    font-weight: bold;
+    margin-bottom: -10px;
+}
+
+.student_name{
+    font-weight: normal;
+    text-transform: uppercase;
+    
+}
+
+.subjects{
+    margin-top: 5%;
+}
+
+.subject{
+    text-align: center;
+    font-weight: bold;
+}
+
+
+
+
+.profile-btn{
+    width: 100%;
+}
+.profilePIC{
+    border: #333 2px;
+    border-radius: 100%;
+    height: 200px;
+    width: 200px;
+}
+
+
+
+
+
+
+
+
+.card-body{
+    padding-top: 20px;
+}
+
+
+
+
+
+.image-container {
+    position: relative;
+    overflow: hidden;
+    height: 450px;
+    width: 450px;
+    box-shadow: 5px 5px 20px 1px #000000;
+    border-radius: 10px;
+}
+
+.zoom-img {
+    transition: transform 0.3s ease-in-out;
+    height: 450px;
+    width: 450px;
+}
+
+.zoom-img:hover {
+    transform: scale(1.2);
+}
+
+
+
+
+
+
+
+
+
+
+
+                .custum-file-upload {
+                    height: 200px;
+                    width: 300px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 20px;
+                    cursor: pointer;
+                    border: 2px dashed #cacaca;
+                    background-color: rgba(255, 255, 255, 1);
+                    padding: 1.5rem;
+                    border-radius: 10px;
+                    box-shadow: 0px 48px 35px -48px rgba(0, 0, 0, 0.1);
+                }
+        
+                .custum-file-upload .icon {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+        
+                .custum-file-upload .icon svg {
+                    height: 80px;
+                    fill: rgba(75, 85, 99, 1);
+                }
+        
+                .custum-file-upload .text {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+        
+                .custum-file-upload .text span {
+                    font-weight: 400;
+                    color: rgba(75, 85, 99, 1);
+                }
+        
+                .custum-file-upload input[type="file"] {
+                    display: none;
+                }
+                                .button {
+                                    -moz-appearance: none;
+                                    -webkit-appearance: none;
+                                    appearance: none;
+                                    border: none;
+                                    background: none;
+                                    color: #0f1923;
+                                    cursor: pointer;
+                                    position: relative;
+                                    padding: 8px;
+                                    margin-bottom: 20px;
+                                    text-transform: uppercase;
+                                    font-weight: bold;
+                                    font-size: 14px;
+                                    transition: all .15s ease;
+                                    width: 300px;
+                                }
+                
+                                .button::before,
+                                .button::after {
+                                    content: '';
+                                    display: block;
+                                    position: absolute;
+                                    right: 0;
+                                    left: 0;
+                                    height: calc(50% - 5px);
+                                    border: 1px solid #7D8082;
+                                    transition: all .15s ease;
+                                }
+                
+                                .button::before {
+                                    top: 0;
+                                    border-bottom-width: 0;
+                                }
+                
+                                .button::after {
+                                    bottom: 0;
+                                    border-top-width: 0;
+                                }
+                
+                                .button:active,
+                                .button:focus {
+                                    outline: none;
+                                }
+                
+                                .button:active::before,
+                                .button:active::after {
+                                    right: 3px;
+                                    left: 3px;
+                                }
+                
+                                .button:active::before {
+                                    top: 3px;
+                                }
+                
+                                .button:active::after {
+                                    bottom: 3px;
+                                }
+                
+                                .button_lg {
+                                    position: relative;
+                                    display: block;
+                                    padding: 10px 20px;
+                                    color: #fff;
+                                    background-color: #0f1923;
+                                    overflow: hidden;
+                                    box-shadow: inset 0px 0px 0px 1px transparent;
+                                }
+                
+                                .button_lg::before {
+                                    content: '';
+                                    display: block;
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    width: 2px;
+                                    height: 2px;
+                                    background-color: #0f1923;
+                                }
+                
+                                .button_lg::after {
+                                    content: '';
+                                    display: block;
+                                    position: absolute;
+                                    right: 0;
+                                    bottom: 0;
+                                    width: 4px;
+                                    height: 4px;
+                                    background-color: #0f1923;
+                                    transition: all .2s ease;
+                                }
+                
+                                .button_sl {
+                                    display: block;
+                                    position: absolute;
+                                    top: 0;
+                                    bottom: -1px;
+                                    left: -8px;
+                                    width: 0;
+                                    background-color: var(--color2);
+                                    transform: skew(-15deg);
+                                    transition: all .2s ease;
+                                }
+                
+                                .button_text {
+                                    position: relative;
+                                }
+                
+                                .button:hover {
+                                    color: #0f1923;
+                                }
+                
+                                .button:hover .button_sl {
+                                    width: calc(100% + 15px);
+                                }
+                
+                                .button:hover .button_lg::after {
+                                    background-color: #fff;
+                                }

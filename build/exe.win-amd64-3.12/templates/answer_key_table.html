@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Answer Key</h1>
+    <div class="row">
+        {% for pair, data in all_column_data.items() %}
+        <div class="col-md-4 mb-4">
+            <div class="card key">
+                <div class="card-body">
+                    <h2 class="card-title">For: {{ pair[1] }}</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>{{ pair[0] }}</th>
+                                <th>{{ pair[1] }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data %}
+                            <tr>
+                                <td>{{ row[pair[0]] }}</td>
+                                <td>{{ row[pair[1]] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% if loop.index % 3 == 0 %}
+    </div>
+    <div class="row">
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

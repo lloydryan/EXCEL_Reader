@@ -1,0 +1,23 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment
+venv/
+
+# Ignore unnecessary build artifacts
+dist/
+
+# Ignore compressed files
+*.zip
+
+# Ignore PyInstaller spec files if not needed
+app.spec
+
+# Ignore uploaded files (modify if needed)
+uploads/
+
+# Ignore environment variables or sensitive files (if any)
+.env
