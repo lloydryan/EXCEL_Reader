@@ -3,7 +3,7 @@
   <div class="row">
     <!-- Left Side: Feedback Form -->
     <div class="col-md-6 mb-2">
-      <div class="card p-4 shadow-lg">
+      <div class="card p-4 shadow-lg rate-card">
         <h4 class="text-center mb-3">Rate this Web App</h4>
         <form
           id="feedbackForm"
@@ -78,7 +78,7 @@
 
     <!-- Right Side: Rating Overview -->
     <div class="col-md-6">
-      <div class="card p-4 shadow-lg">
+      <div class="card p-4 shadow-lg rate-card">
         <h4 class="text-center mb-3">Rating Overview</h4>
         <div id="rating-overview" class="text-center">
           <h2 class="mb-2">⭐ <span id="average-rating">0.0</span> / 5</h2>
@@ -105,39 +105,60 @@
     </div>
   </div>
 </div>
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-md-10 text-center align-self-center mx-auto">
+      <!--Retrive all the feedback from latest-->
+          <div id="feedback-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<style>
-  .card {
-    border-radius: 15px;
-    height: 360px;
-  }
-  .star-rating {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-  }
-  .star {
-    width: 50px;
-    height: 50px;
-    fill: #ddd;
-    transition: fill 0.2s;
-    transition: fill 0.3s ease-in-out, transform 0.2s ease-in-out;
-  }
-  .star:hover,
-  .star.active {
-    fill: gold;
-    transform: scale(1.2);
-  }
-  .progress {
-    height: 20px;
-    border-radius: 40px;
-    margin-left: 10px;
-  }
-  .btn-lg {
-    font-size: 1.1rem;
-    border-radius: 10px;
-  }
-</style>
+  <style>
+    .rate-card{
+      border-radius: 15px;
+      height: 360px;
+    }
+    .card {
+      border-radius: 15px;
+    }
+    .message {
+      font-size: 1.2rem;
+      color: #333;
+      text-align: left;
+    }
+    .star-rating {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .star {
+      width: 50px;
+      height: 50px;
+      fill: #ddd;
+      transition: fill 0.2s;
+      transition: fill 0.3s ease-in-out, transform 0.2s ease-in-out;
+    }
+    .star:hover,
+    .star.active {
+      fill: gold;
+      transform: scale(1.2);
+    }
+    .progress {
+      height: 20px;
+      border-radius: 40px;
+      margin-left: 10px;
+    }
+    .btn-lg {
+      font-size: 1.1rem;
+      border-radius: 16px;
+    }
+    .progress-bar {
+      border-radius: 40px;
+    }
+  </style>
 
-{% endblock %}
+  {% endblock %}
+</div>

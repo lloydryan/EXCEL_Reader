@@ -88,6 +88,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  //fecth feedback from firebase
+  function fetchFeedbacks() {
+    window.db
+      .collection("feedback")
+      .orderBy("timestamp", "desc") // Sort by latest
+      .onSnapshot((snapshot) => {
+        const feedbackContainer = document.getElementById("feedback-list");
+        feedbackContainer.innerHTML = ""; // Clear previous entries
+
+        if (snapshot.empty) {
+          feedbackContainer.innerHTML = "<p>No feedback available yet.</p>";
+          return;
+        }
+
+        let feedbackHTML = `<div class="card p-3">`;
+
+        snapshot.forEach((doc, index) => {
+          const feedback = doc.data();
+          feedbackHTML += `
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h5 class="mb-1"> <i class="fas fa-user-circle fa-lg"></i> ${
+                  feedback.name
+                }</h5>
+                <p class="text-warning mb-0">${"⭐".repeat(feedback.rating)}</p>
+              </div>
+              <small class="text-muted">${feedback.timestamp
+                ?.toDate()
+                .toLocaleString()}</small>
+            </div>
+            <div class="border p-2 mt-2 bg-light ">
+              <p class="mb-0 message">${feedback.message}.</p>
+            </div>
+            <br>
+            <hr>
+            <br>
+            ${index < snapshot.size - 1 ? "<hr>" : ""}
+          `;
+        });
+
+        feedbackHTML += `</div>`;
+        feedbackContainer.innerHTML = feedbackHTML;
+      });
+  }
+
   // Wait for Firebase to be initialized
   function waitForFirebase() {
     return new Promise((resolve, reject) => {
@@ -106,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   waitForFirebase()
+    .then(() => fetchFeedbacks())
     .then(() => fetchRatings())
     .then(() => {
       feedbackForm.addEventListener("submit", function (event) {
