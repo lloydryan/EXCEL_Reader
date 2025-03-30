@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const stars = document.querySelectorAll(".star");
   const ratingInput = document.getElementById("rating");
+  const feedbackForm = document.getElementById("feedbackForm");
   let selectedRating = 0;
 
   stars.forEach((star, index) => {
@@ -52,14 +53,83 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  document
-    .getElementById("feedbackForm")
-    .addEventListener("submit", function (event) {
-      if (!selectedRating) {
-        alert("Please select a rating!");
+  // Wait for Firebase to be initialized
+  function waitForFirebase() {
+    return new Promise((resolve, reject) => {
+      const checkFirebase = setInterval(() => {
+        if (window.db) {
+          clearInterval(checkFirebase);
+          console.log("✅ Firebase is initialized");
+          resolve();
+        }
+      }, 500);
+      setTimeout(() => {
+        clearInterval(checkFirebase);
+        reject(new Error("❌ Firebase took too long to initialize!"));
+      }, 5000);
+    });
+  }
+
+  waitForFirebase()
+    .then(() => {
+      feedbackForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        return;
-      }
-      alert("You have given " + selectedRating + " star(s)!");
+
+        const name = document.getElementById("name").value.trim();
+        const message = document.getElementById("message").value.trim();
+
+        if (!selectedRating) {
+          Swal.fire({
+            title: "Warning",
+            text: "Please select a rating before submitting!",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+          return;
+        }
+
+        if (message === "") {
+          Swal.fire({
+            title: "Warning",
+            text: "Feedback cannot be empty, please provide some feedback",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+          return;
+        }
+
+        // Save to Firebase
+        window.db
+          .collection("feedback")
+          .add({
+            name: name,
+            rating: selectedRating,
+            message: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .then(() => {
+            Swal.fire({
+              title: "Success",
+              text: "✅ Feedback submitted successfully!",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+
+            feedbackForm.reset();
+            resetStars();
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error);
+            Swal.fire({
+              title: "Error",
+              text: "❌ Error submitting feedback!",
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+          });
+      });
+    })
+    .catch((error) => {
+      console.error(error.message);
     });
 });

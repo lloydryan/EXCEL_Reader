@@ -376,7 +376,10 @@ def answer_key_table():
 @app.route('/feedback')
 @login_required
 def feedback():
-    return render_template('feedback.html')
+    first_name = current_user.first_name.title()
+    last_name = current_user.last_name.title()
+    return render_template('feedback.html', first_name=first_name, 
+                                       last_name=last_name)
 
 # Retrieve data for selected row and show student details
 @app.route('/retrieve', methods=['POST'])
