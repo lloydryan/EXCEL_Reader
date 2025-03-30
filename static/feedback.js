@@ -98,6 +98,17 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
+        // ** Check if the user is offline **
+        if (!navigator.onLine) {
+          Swal.fire({
+            title: "No Internet Connection",
+            text: "You are offline. Please check your internet connection and try again.",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+          return;
+        }
+
         // Save to Firebase
         window.db
           .collection("feedback")
