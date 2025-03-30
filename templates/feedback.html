@@ -1,74 +1,115 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container mt-4">
-  <div class="card p-4 shadow-lg">
-    <form id="feedbackForm" method="post" class="needs-validation" novalidate>
-      <div class="mb-3 text-center">
-        <label class="form-label">Rate this Web App:</label>
-        <div class="star-rating">
-          <svg class="star" data-value="1" viewBox="0 0 24 24">
-            <path
-              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+  <div class="row">
+    <!-- Left Side: Feedback Form -->
+    <div class="col-md-6 mb-2">
+      <div class="card p-4 shadow-lg">
+        <h4 class="text-center mb-3">Rate this Web App</h4>
+        <form
+          id="feedbackForm"
+          method="post"
+          class="needs-validation"
+          novalidate
+        >
+          <div class="mb-3 text-center">
+            <div class="star-rating">
+              <svg class="star" data-value="1" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+                />
+              </svg>
+              <svg class="star" data-value="2" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+                />
+              </svg>
+              <svg class="star" data-value="3" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+                />
+              </svg>
+              <svg class="star" data-value="4" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+                />
+              </svg>
+              <svg class="star" data-value="5" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+                />
+              </svg>
+            </div>
+            <input type="hidden" id="rating" name="rating" required />
+          </div>
+
+          <div class="mb-3" style="display: none">
+            <label for="name" class="form-label">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="form-control"
+              value="{{ first_name }} {{ last_name }}"
+              required
+              readonly
             />
-          </svg>
-          <svg class="star" data-value="2" viewBox="0 0 24 24">
-            <path
-              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
-            />
-          </svg>
-          <svg class="star" data-value="3" viewBox="0 0 24 24">
-            <path
-              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
-            />
-          </svg>
-          <svg class="star" data-value="4" viewBox="0 0 24 24">
-            <path
-              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
-            />
-          </svg>
-          <svg class="star" data-value="5" viewBox="0 0 24 24">
-            <path
-              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
-            />
-          </svg>
+          </div>
+
+          <div class="mb-3">
+            <label for="message" class="form-label fw-bold"
+              >Write us some Feedback:</label
+            >
+            <textarea
+              id="message"
+              name="message"
+              rows="3"
+              class="form-control"
+              required
+            ></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Side: Rating Overview -->
+    <div class="col-md-6">
+      <div class="card p-4 shadow-lg">
+        <h4 class="text-center mb-3">Rating Overview</h4>
+        <div id="rating-overview" class="text-center">
+          <h2 class="mb-2">⭐ <span id="average-rating">0.0</span> / 5</h2>
+          <p class="text-muted">
+            Based on <span id="total-reviews">0</span> reviews
+          </p>
+          <hr />
+          {% for i in range(5, 0, -1) %}
+          <div class="d-flex align-items-center mb-2">
+            <span class="fw-bold me-2">{{ i }}</span>
+            <div class="progress flex-grow-1">
+              <div
+                id="stars-{{ i }}"
+                class="progress-bar bg-warning"
+                style="width: 0%"
+              >
+                0%
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
-        <input type="hidden" id="rating" name="rating" required />
       </div>
-
-      <div class="mb-3" style="display: none">
-        <label for="name" class="form-label">Name:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          class="form-control"
-          value="{{ first_name }} {{ last_name }}"
-          required
-          readonly
-        />
-      </div>
-
-      <div class="mb-3">
-        <label for="message" class="form-label">FeedBack:</label>
-        <textarea
-          id="message"
-          name="message"
-          rows="5"
-          class="form-control"
-          required
-        ></textarea>
-      </div>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
-    </form>
+    </div>
   </div>
 </div>
 
 <style>
   .card {
-    max-width: 500px;
-    margin: auto;
     border-radius: 15px;
+    height: 360px;
   }
   .star-rating {
     display: flex;
@@ -81,13 +122,21 @@
     height: 50px;
     fill: #ddd;
     transition: fill 0.2s;
+    transition: fill 0.3s ease-in-out, transform 0.2s ease-in-out;
   }
   .star:hover,
   .star.active {
     fill: gold;
+    transform: scale(1.2);
   }
-  label {
-    font-size: larger;
+  .progress {
+    height: 20px;
+    border-radius: 40px;
+    margin-left: 10px;
+  }
+  .btn-lg {
+    font-size: 1.1rem;
+    border-radius: 10px;
   }
 </style>
 

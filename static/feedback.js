@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const stars = document.querySelectorAll(".star");
   const ratingInput = document.getElementById("rating");
   const feedbackForm = document.getElementById("feedbackForm");
+  const submitButton = feedbackForm.querySelector("button[type='submit']");
+
   let selectedRating = 0;
 
   stars.forEach((star, index) => {
@@ -52,6 +54,39 @@ document.addEventListener("DOMContentLoaded", function () {
       star.classList.remove("active");
     });
   }
+  function fetchRatings() {
+    window.db.collection("feedback").onSnapshot((snapshot) => {
+      let totalReviews = snapshot.size;
+      let ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      let totalRating = 0;
+
+      snapshot.forEach((doc) => {
+        let rating = doc.data().rating;
+        if (ratingCounts[rating] !== undefined) {
+          ratingCounts[rating]++;
+          totalRating += rating;
+        }
+      });
+
+      let averageRating =
+        totalReviews > 0 ? (totalRating / totalReviews).toFixed(1) : "0.0";
+
+      // Update HTML
+      document.getElementById("average-rating").innerText = averageRating;
+      document.getElementById("total-reviews").innerText = totalReviews;
+
+      // Update progress bars
+      Object.keys(ratingCounts).forEach((rating) => {
+        let percentage =
+          totalReviews > 0 ? (ratingCounts[rating] / totalReviews) * 100 : 0;
+        document.getElementById(`stars-${rating}`).style.width =
+          percentage + "%";
+        document.getElementById(
+          `stars-${rating}`
+        ).innerText = `${percentage.toFixed(1)}%`;
+      });
+    });
+  }
 
   // Wait for Firebase to be initialized
   function waitForFirebase() {
@@ -71,9 +106,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   waitForFirebase()
+    .then(() => fetchRatings())
     .then(() => {
       feedbackForm.addEventListener("submit", function (event) {
         event.preventDefault();
+
+        // Disable button to prevent multiple clicks
+        submitButton.disabled = true;
+        submitButton.innerText = "Submitting...";
 
         const name = document.getElementById("name").value.trim();
         const message = document.getElementById("message").value.trim();
@@ -85,6 +125,8 @@ document.addEventListener("DOMContentLoaded", function () {
             icon: "warning",
             confirmButtonText: "OK",
           });
+          submitButton.disabled = false;
+          submitButton.innerText = "Submit";
           return;
         }
 
@@ -95,10 +137,12 @@ document.addEventListener("DOMContentLoaded", function () {
             icon: "warning",
             confirmButtonText: "OK",
           });
+          submitButton.disabled = false;
+          submitButton.innerText = "Submit";
           return;
         }
 
-        // ** Check if the user is offline **
+        // Check if the user is offline
         if (!navigator.onLine) {
           Swal.fire({
             title: "No Internet Connection",
@@ -106,6 +150,8 @@ document.addEventListener("DOMContentLoaded", function () {
             icon: "warning",
             confirmButtonText: "OK",
           });
+          submitButton.disabled = false;
+          submitButton.innerText = "Submit";
           return;
         }
 
@@ -128,6 +174,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             feedbackForm.reset();
             resetStars();
+
+            // Re-enable submit button after successful submission
+            submitButton.innerText = "Submit";
+            submitButton.disabled = false;
           })
           .catch((error) => {
             console.error("Error adding document: ", error);
@@ -137,6 +187,10 @@ document.addEventListener("DOMContentLoaded", function () {
               icon: "error",
               confirmButtonText: "OK",
             });
+
+            // Re-enable submit button in case of failure
+            submitButton.innerText = "Submit";
+            submitButton.disabled = false;
           });
       });
     })
