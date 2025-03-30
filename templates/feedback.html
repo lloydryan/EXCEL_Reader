@@ -1,0 +1,100 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4 text-center">Feedback</h1>
+  <div class="card p-4 shadow-lg">
+    <form id="feedbackForm" method="post" class="needs-validation" novalidate>
+      <div class="mb-3 text-center">
+        <label class="form-label">Rating:</label>
+        <div class="star-rating">
+          <svg class="star" data-value="1" viewBox="0 0 24 24">
+            <path
+              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+            />
+          </svg>
+          <svg class="star" data-value="2" viewBox="0 0 24 24">
+            <path
+              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+            />
+          </svg>
+          <svg class="star" data-value="3" viewBox="0 0 24 24">
+            <path
+              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+            />
+          </svg>
+          <svg class="star" data-value="4" viewBox="0 0 24 24">
+            <path
+              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+            />
+          </svg>
+          <svg class="star" data-value="5" viewBox="0 0 24 24">
+            <path
+              d="M12 2L15 9H22L16.5 14L18 21L12 17L6 21L7.5 14L2 9H9L12 2Z"
+            />
+          </svg>
+        </div>
+        <input type="hidden" id="rating" name="rating" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="message" class="form-label">Message:</label>
+        <textarea
+          id="message"
+          name="message"
+          rows="5"
+          class="form-control"
+          required
+        ></textarea>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .card {
+    max-width: 500px;
+    margin: auto;
+    border-radius: 15px;
+  }
+  .star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .star {
+    width: 50px;
+    height: 50px;
+    fill: #ddd;
+    transition: fill 0.2s;
+  }
+  .star:hover,
+  .star.active {
+    fill: gold;
+  }
+</style>
+
+<script src="{{ url_for('static', filename='feedback.js') }}"></script>
+{% endblock %}

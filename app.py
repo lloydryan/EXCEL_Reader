@@ -372,6 +372,12 @@ def answer_key_table():
 
     return render_template('answer_key_table.html', all_column_data=all_column_data)
 
+
+@app.route('/feedback')
+@login_required
+def feedback():
+    return render_template('feedback.html')
+
 # Retrieve data for selected row and show student details
 @app.route('/retrieve', methods=['POST'])
 def retrieve_data():
